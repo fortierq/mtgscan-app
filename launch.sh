@@ -1,2 +1,2 @@
-export FLASK_APP=mtgscan_app/main.py
+export FLASK_APP=mtgscan_app/app.py
 poetry run flask run
