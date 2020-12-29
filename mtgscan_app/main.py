@@ -6,7 +6,10 @@ UPLOAD_FOLDER = 'dl'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
+# default value during development
 app.secret_key = b'\xff(\x13\x96\xa7U\xb2\x14B\tZ\x0em\xaa\xc7\x08'
+# overridden if this file exists in the instance folder
+app.config.from_pyfile('config.py', silent=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
