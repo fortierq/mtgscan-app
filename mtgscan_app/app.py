@@ -1,10 +1,13 @@
 import os
-from flask import Flask, flash, request, redirect, url_for, render_template
+import sys
+from pathlib import Path
+
+from flask import Flask, flash, redirect, render_template, request, url_for
 from werkzeug.utils import secure_filename
 
 from mtgscan_app.scan import scan
 
-UPLOAD_FOLDER = '/home/qfortier/Code/mtgscan-app/mtgscan_app/dl/'
+UPLOAD_FOLDER = str(Path(__file__).parent / "dl")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
@@ -13,7 +16,7 @@ app = Flask(__name__)
 # overridden if this file exists in the instance folder
 # app.config.from_pyfile('config.py', silent=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
+app.config['MAX_CONTENT_LENGTH'] = 100_000_000
 
 def allowed_file(filename):
     return '.' in filename and \
