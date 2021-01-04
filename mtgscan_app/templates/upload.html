@@ -1,4 +1,9 @@
 <!doctype html>
+
+<head>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
 <title>mtgscan app</title>
 <h1>Convert deck image to decklist</h1>
 
@@ -7,6 +12,11 @@
   <input type=submit value=Upload>
 </form>
 
-<div class="text">
-<pre>{{ deck }}</pre>
+<div class="row">
+  <div class="column">
+    <pre>{{ deck }}</pre>
+  </div>
+  <div class="column">
+    <img src="{{ url_for('uploaded_file', filename=image) }}" >
+  </div>
 </div>
