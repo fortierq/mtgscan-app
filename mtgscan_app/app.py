@@ -39,5 +39,5 @@ def upload_file():
             filename = secure_filename(file.filename)
             path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(path)
-            deck = scan(path)
+            deck = scan(path, os.path.join(app.config['UPLOAD_FOLDER'], filename))
     return render_template("upload.html", deck=deck, image=filename)
