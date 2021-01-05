@@ -15,19 +15,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 100_000_000
 app.secret_key = b'\xff(\x13\x96\xa7U\xb2\x14B\tZ\x0em\xaa\xc7\x08'
 
-import sys
-from pathlib import Path
-
-import mtgscan
-from mtgscan.ocr import Azure
-from mtgscan.text import MagicRecognition
-
-DIR_ROOT = Path(__file__).parents[1]
-
-azure = Azure()
-rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"), 
-                       file_keywords=(DIR_ROOT / "Keywords.json"))
-
 
 def allowed_file(filename):
     return '.' in filename and \
