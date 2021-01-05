@@ -175,7 +175,7 @@ python-versions = ">=3.5"
 
 [[package]]
 name = "mtgscan"
-version = "1.0.2"
+version = "1.0.3"
 description = "Convert an image containing Magic cards to decklist"
 category = "main"
 optional = false
@@ -371,7 +371,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "136e17e30f621657fa85f429342cff9e6c717123df4d88d2d2bc2cea4df94aff"
+content-hash = "b044d577b3604d05c9767b1f45bde4c1d891997bdb94939ae2943483cfac31d6"
 
 [metadata.files]
 atomicwrites = [
@@ -527,8 +527,8 @@ more-itertools = [
     {file = "more_itertools-8.6.0-py3-none-any.whl", hash = "sha256:8e1a2a43b2f2727425f2b5839587ae37093f19153dc26c0927d1048ff6557330"},
 ]
 mtgscan = [
-    {file = "mtgscan-1.0.2-py3-none-any.whl", hash = "sha256:5a2124752a86c5c04ed8b2a8a6a3ed0f27438e8f0c6b26fe540657e8a8677190"},
-    {file = "mtgscan-1.0.2.tar.gz", hash = "sha256:2079af2f2b093d79bd6e83a846b96fba5566c154b204f8de53f9aa9cf63bf862"},
+    {file = "mtgscan-1.0.3-py3-none-any.whl", hash = "sha256:3a6095da6e0413a2bb676df1bfb865ab589c0007b5c18e2339218efc286dc632"},
+    {file = "mtgscan-1.0.3.tar.gz", hash = "sha256:db2f7306f26748ee686c6f5fa1b73b1d188d6933a5533dd6a34cfb0b87a5ee77"},
 ]
 numpy = [
     {file = "numpy-1.19.3-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:942d2cdcb362739908c26ce8dd88db6e139d3fa829dd7452dd9ff02cba6b58b2"},
