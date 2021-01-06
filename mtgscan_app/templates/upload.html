@@ -4,12 +4,15 @@
 <h1>Convert deck image to decklist</h1>
 
 <form method=post enctype=multipart/form-data>
-  <input type=file name=file>
-  <input type=submit value=Upload>
+<input type=file name=file> <br>
+Or URL: <input type="text" name="url_image" size=30 value="https://pbs.twimg.com/media/ErDOjGyXIAAiJm9?format=jpg&name=large"> 
+<input type=submit value="Scan image">
 </form>
 
 <pre>{{ deck }}</pre>
 
 <br>
 
+{% if image %}
 <img src="{{ url_for('uploaded_file', filename=image) }}">
+{% endif %}
