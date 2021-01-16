@@ -14,7 +14,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 100_000_000
-app.secret_key = b'\xff(\x13\x96\xa7U\xb2\x14B\tZ\x0em\xaa\xc7\x08'
+app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
