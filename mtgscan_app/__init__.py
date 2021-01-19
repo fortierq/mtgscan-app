@@ -10,4 +10,5 @@ DIR_ROOT = Path(__file__).parents[1]
 
 azure = Azure()
 rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"), 
-                       file_keywords=(DIR_ROOT / "Keywords.json"))
+                       file_keywords=(DIR_ROOT / "Keywords.json"),
+                       max_ratio_diff=0.2)
