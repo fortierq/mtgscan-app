@@ -1,11 +1,14 @@
 <!doctype html>
 
+{% import "bootstrap/wtf.html" as wtf %}
+
 <title>mtgscan app</title>
 <h1>Convert deck image to decklist</h1>
 
+{{ wtf.quick_form(form) }}
 <form method=post enctype=multipart/form-data>
 <input type=file name=file> <br>
-Or URL: <input type="text" name="url_image" size=30 value="https://pbs.twimg.com/media/ErEUxrxXMAQI-3B?format=jpg&name=large"> 
+<!-- Or URL: <input type="text" name="url_image" size=30 value="https://pbs.twimg.com/media/ErEUxrxXMAQI-3B?format=jpg&name=large">  -->
 <input type=submit value="Scan image">
 </form>
 
