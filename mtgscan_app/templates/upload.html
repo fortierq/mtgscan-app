@@ -11,7 +11,7 @@
     <input type=file name=file> <br>
     Or URL: <input type="text" name="url_image" size=30
         value="https://pbs.twimg.com/media/ErEUxrxXMAQI-3B?format=jpg&name=large">
-    <input type=submit value="Scan image" onclick="$('.loader').show();">
+    <input type=submit value="Scan image" onclick="document.getElementsByClassName('loader')[0].style.display = 'block';">
 </form>
 
 <div class="loader center" style="display:none;"></div>
