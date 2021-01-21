@@ -8,11 +8,13 @@ authors = ["Quentin Fortier <qpfortier@gmail.com>"]
 python = "^3.8"
 Flask = "^1.1.2"
 mtgscan = "^1.0.3"
+Flask-Bootstrap = "^3.3.7"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 flake8 = "^3.8.4"
 yapf = "^0.30.0"
+pylint = "^2.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
