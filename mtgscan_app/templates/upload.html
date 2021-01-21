@@ -1,12 +1,10 @@
-{% extends "bootstrap/base.html" %}
+<!doctype html>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
 
-{% block title %}mtgscan app{% endblock %}
 
-{% block content %}
-
+<title>mtgscan app</title>
 <h1 class="center-text">Convert deck image to decklist</h1>
 
 <form method=post enctype=multipart/form-data>
@@ -25,6 +23,3 @@
 {% if image %}
 <img src="{{ url_for('uploaded_file', filename=image) }}">
 {% endif %}
-
-{% endblock %}
-    
