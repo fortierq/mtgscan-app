@@ -1,15 +1,12 @@
 import os
-from pathlib import Path
 import threading
 import time
-
-from flask import Flask, render_template, request, send_from_directory
-from werkzeug.utils import secure_filename
-
 from pathlib import Path
 
+from flask import Flask, render_template, request, send_from_directory
 from mtgscan.ocr import Azure
 from mtgscan.text import MagicRecognition
+from werkzeug.utils import secure_filename
 
 from mtgscan_app.scan import scan
 
@@ -17,8 +14,8 @@ DIR_ROOT = Path(__file__).parents[1]
 azure = Azure()
 rec = None
 
-UPLOAD_FOLDER = str(Path(__file__).parent / "dl")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+UPLOAD_FOLDER = Path(__file__).parent / "dl"
+UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app = Flask(__name__)
@@ -59,11 +56,11 @@ def upload_file():
         if 'file' in request.files and request.files['file']:
             file = request.files['file']
             filename = secure_filename(file.filename)
-            path = Path(app.config['UPLOAD_FOLDER']) / filename
+            path = app.config['UPLOAD_FOLDER'] / filename
             file.save(path)
         elif "url_image" in request.form and request.form["url_image"]:
             path = request.form["url_image"]
         if path:
             filename = "image.png"
-            deck = scan(path, os.path.join(app.config['UPLOAD_FOLDER'], filename), azure, rec)
+            deck = scan(path, app.config['UPLOAD_FOLDER'] / filename, azure, rec)
     return render_template("upload.html", deck=deck, image=filename)
