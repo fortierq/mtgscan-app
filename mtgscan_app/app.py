@@ -25,20 +25,19 @@ app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
-@app.before_first_request
-def before_first_request():
-    def load():
-        """
-        This function cleans up old tasks from our in-memory data structure.
-        """
-        global rec
+def load():
+    """
+    This function cleans up old tasks from our in-memory data structure.
+    """
+    global rec
 
-        rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
-                               file_keywords=(DIR_ROOT / "Keywords.json"),
-                               max_ratio_diff=0.2)
+    rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
+                            file_keywords=(DIR_ROOT / "Keywords.json"),
+                            max_ratio_diff=0.2)
 
-    thread = threading.Thread(target=load)
-    thread.start()
+
+thread = threading.Thread(target=load)
+thread.start()
 
 
 @app.route('/uploads/<filename>')
