@@ -3,13 +3,11 @@ from pathlib import Path
 import threading
 import time
 
-from flask import (Flask, flash, redirect, render_template, request,
-                   send_from_directory, url_for)
+from flask import Flask, render_template, request, send_from_directory
 from werkzeug.utils import secure_filename
 
 from pathlib import Path
 
-import mtgscan
 from mtgscan.ocr import Azure
 from mtgscan.text import MagicRecognition
 
@@ -29,6 +27,7 @@ app.config['MAX_CONTENT_LENGTH'] = 100_000_000
 app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+
 @app.before_first_request
 def before_first_request():
     def load():
@@ -36,10 +35,10 @@ def before_first_request():
         This function cleans up old tasks from our in-memory data structure.
         """
         global rec
-        
-        rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"), 
-                            file_keywords=(DIR_ROOT / "Keywords.json"),
-                            max_ratio_diff=0.2)
+
+        rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
+                               file_keywords=(DIR_ROOT / "Keywords.json"),
+                               max_ratio_diff=0.2)
 
     thread = threading.Thread(target=load)
     thread.start()
@@ -55,12 +54,12 @@ def upload_file():
     deck, filename = "", ""
     if request.method == 'POST':
         while not rec:
-            time.sleep(5) 
+            time.sleep(5)
         path = None
         if 'file' in request.files and request.files['file']:
             file = request.files['file']
             filename = secure_filename(file.filename)
-            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            path = Path(app.config['UPLOAD_FOLDER']) / filename
             file.save(path)
         elif "url_image" in request.form and request.form["url_image"]:
             path = request.form["url_image"]
