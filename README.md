@@ -13,7 +13,7 @@ source launch.sh
 
 # Usage
 
-Load an image or select an URL to get the decklistand an image displaying recognized cards.
+Load an image or select an URL to get the decklist and an image displaying recognized cards.
 
 # RESTful API
 
