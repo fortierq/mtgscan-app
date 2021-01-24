@@ -3,7 +3,7 @@ import threading
 import time
 from pathlib import Path
 
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, jsonify
 from mtgscan.ocr import Azure
 from mtgscan.text import MagicRecognition
 from werkzeug.utils import secure_filename
@@ -32,12 +32,17 @@ def load():
     global rec
 
     rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
-                            file_keywords=(DIR_ROOT / "Keywords.json"),
-                            max_ratio_diff=0.2)
+                           file_keywords=(DIR_ROOT / "Keywords.json"),
+                           max_ratio_diff=0.2)
 
 
 thread = threading.Thread(target=load)
 thread.start()
+
+
+def wait_rec(): # wait until rec files are loaded
+    while not rec:
+        time.sleep(5)
 
 
 @app.route('/uploads/<filename>')
@@ -49,17 +54,23 @@ def uploaded_file(filename):
 def upload_file():
     deck, filename = "", ""
     if request.method == 'POST':
-        while not rec:
-            time.sleep(5)
-        path = None
+        wait_rec()
+        image = None
         if 'file' in request.files and request.files['file']:
             file = request.files['file']
             filename = secure_filename(file.filename)
-            path = app.config['UPLOAD_FOLDER'] / filename
-            file.save(path)
+            image = app.config['UPLOAD_FOLDER'] / filename
+            file.save(image)
         elif "url_image" in request.form and request.form["url_image"]:
-            path = request.form["url_image"]
-        if path:
+            image = request.form["url_image"]
+        if image:
             filename = "image.png"
-            deck = scan(path, app.config['UPLOAD_FOLDER'] / filename, azure, rec)
+            deck = scan(image, app.config['UPLOAD_FOLDER'] / filename, azure, rec)
     return render_template("upload.html", deck=deck, image=filename)
+
+
+@app.route('/api/<path:url>')
+def api_scan(url):
+    wait_rec()
+    deck = scan(url, None, azure, rec)
+    return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
