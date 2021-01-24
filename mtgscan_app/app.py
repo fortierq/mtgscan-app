@@ -40,7 +40,7 @@ thread = threading.Thread(target=load)
 thread.start()
 
 
-def wait_rec(): # wait until rec files are loaded
+def wait_rec():  # wait until rec files are loaded
     while not rec:
         time.sleep(5)
 
@@ -65,12 +65,12 @@ def upload_file():
             image = request.form["url_image"]
         if image:
             filename = "image.png"
-            deck = scan(image, app.config['UPLOAD_FOLDER'] / filename, azure, rec)
+            deck = scan(image, azure, rec, app.config['UPLOAD_FOLDER'] / filename)
     return render_template("upload.html", deck=deck, image=filename)
 
 
 @app.route('/api/<path:url>')
 def api_scan(url):
     wait_rec()
-    deck = scan(url, None, azure, rec)
+    deck = scan(url, azure, rec, None)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
