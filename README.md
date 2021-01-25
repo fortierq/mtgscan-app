@@ -19,14 +19,15 @@ Load an image or select an URL to get the decklist and an image displaying recog
 
 ## Request
 
-`GET /api/url`  
+`GET /api/<url>`  
+Get cards (JSON format) on the image given by url
 
+<br>
+
+Example:
 ```
 curl -G 127.0.0.1:5000/api/https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg
 ```
-
-## Response
-JSON string of cards on the image given by url
 
 ```
 {
