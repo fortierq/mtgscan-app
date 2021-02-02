@@ -3,7 +3,8 @@ import threading
 import time
 from pathlib import Path
 
-from flask import Flask, render_template, request, send_from_directory, jsonify
+from celery import Celery
+from flask import Flask, jsonify, render_template, request, send_from_directory
 from mtgscan.ocr import Azure
 from mtgscan.text import MagicRecognition
 from werkzeug.utils import secure_filename
@@ -24,16 +25,22 @@ app.config['MAX_CONTENT_LENGTH'] = 100_000_000
 app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+# Celery configuration
+app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
+app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
+
+# Initialize Celery
+celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
+celery.conf.update(app.config)
+
 
 def load():
-    """
-    This function cleans up old tasks from our in-memory data structure.
-    """
     global rec
-
-    rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
-                           file_keywords=(DIR_ROOT / "Keywords.json"),
-                           max_ratio_diff=0.2)
+     
+    if rec is None:
+        rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
+                               file_keywords=(DIR_ROOT / "Keywords.json"),
+                               max_ratio_diff=0.2)
 
 
 thread = threading.Thread(target=load)

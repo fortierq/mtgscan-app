@@ -8,6 +8,8 @@ authors = ["Quentin Fortier <qpfortier@gmail.com>"]
 python = "^3.8"
 Flask = "^1.1.2"
 mtgscan = "^1.0.3"
+celery = "^5.0.5"
+redis = "^3.5.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
