@@ -1,4 +1,5 @@
 import os
+import threading
 import time
 from pathlib import Path
 
@@ -32,28 +33,23 @@ celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
 celery.conf.update(app.config)
 
 
-@celery.task
 def load_cards():
-    return {
-        "cards":
-        MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
-                         file_keywords=(DIR_ROOT / "Keywords.json"),
-                         max_ratio_diff=0.2)
-    }
+    global rec
+    if rec is None:
+        rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
+                               file_keywords=(DIR_ROOT / "Keywords.json"),
+                               max_ratio_diff=0.2)
 
 
 @app.before_first_request
 def init():
-    global task_load_cards
-    task_load_cards = load_cards.delay()
+    thread = threading.Thread(target=load_cards)
+    thread.start()
 
 
 def wait_rec():  # wait until rec files are loaded
-    global rec
-    result = load_cards.AsyncResult(task_load_cards.id)
-    while not rec and result.state == "PENDING":
+    while not rec:
         time.sleep(5)
-    rec = task_load_cards.info.get("cards", None)
 
 
 @app.route('/uploads/<filename>')
