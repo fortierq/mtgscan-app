@@ -9,8 +9,6 @@ from mtgscan.ocr import Azure
 from mtgscan.text import MagicRecognition
 from werkzeug.utils import secure_filename
 
-from .scan import scan
-
 DIR_ROOT = Path(__file__).parents[1]
 azure = Azure()
 rec = None
@@ -27,11 +25,11 @@ app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 # Initialize Celery
-app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
-app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
-
+celery = Celery(app.name)
+celery.conf.update(CELERY_BROKER_URL='redis://localhost:6379/0',
+                   CELERY_RESULT_BACKEND='redis://localhost:6379/0',
+                   CELERY_TASK_SERIALIZER="pickle",
+                   CELERY_ACCEPT_CONTENT=['pickle'])
 
 def load_cards():
     global rec
@@ -57,6 +55,17 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
+@celery.task(bind=True, serializer="pickle")
+def scan(self, image, azure, rec, output_image=None):
+    box_texts = azure.image_to_box_texts(image)
+    box_cards = rec.box_texts_to_cards(box_texts)
+    rec.assign_stacked(box_texts, box_cards)
+    if output_image:
+        box_cards.save_image(image, output_image)
+    deck = rec.box_texts_to_deck(box_texts)
+    return {"deck": str(deck)}
+
+
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     deck, filename = "", ""
@@ -72,12 +81,11 @@ def upload_file():
             image = request.form["url_image"]
         if image:
             filename = "image.png"
-            deck = scan(image, azure, rec, app.config['UPLOAD_FOLDER'] / filename)
+            scan.apply_async((image, azure, rec, app.config['UPLOAD_FOLDER'] / filename), serializer="pickle")
     return render_template("upload.html", deck=deck, image=filename)
 
 
 @app.route('/api/<path:url>')
 def api_scan(url):
-    wait_rec()
     deck = scan(url, azure, rec, None)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
