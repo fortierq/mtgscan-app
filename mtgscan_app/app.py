@@ -8,6 +8,7 @@ from flask import Flask, jsonify, render_template, request, send_from_directory
 from mtgscan.ocr import Azure
 from mtgscan.text import MagicRecognition
 from werkzeug.utils import secure_filename
+from flask_socketio import SocketIO, emit
 
 DIR_ROOT = Path(__file__).parents[1]
 azure = Azure()
@@ -15,7 +16,6 @@ rec = None
 
 UPLOAD_FOLDER = Path(__file__).parent / "dl"
 UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 # Initialize Flask
 app = Flask(__name__)
@@ -24,12 +24,16 @@ app.config['MAX_CONTENT_LENGTH'] = 100_000_000
 app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
+socketio = SocketIO(app)
+
+
 # Initialize Celery
 celery = Celery(app.name)
 celery.conf.update(CELERY_BROKER_URL='redis://localhost:6379/0',
                    CELERY_RESULT_BACKEND='redis://localhost:6379/0',
                    CELERY_TASK_SERIALIZER="pickle",
-                   CELERY_ACCEPT_CONTENT=['pickle'])
+                   CELERY_ACCEPT_CONTENT=['pickle', 'json'])
+
 
 def load_cards():
     global rec
@@ -45,6 +49,11 @@ def init():
     thread.start()
 
 
+@app.route('/')
+def index():
+    return render_template("upload.html")
+    
+
 def wait_rec():  # wait until rec files are loaded
     while not rec:
         time.sleep(5)
@@ -54,13 +63,23 @@ def wait_rec():  # wait until rec files are loaded
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@celery.task(serializer="pickle")
+def scan(image, azure, rec, output_image=None):
+    box_texts = azure.image_to_box_texts(image)
+    box_cards = rec.box_texts_to_cards(box_texts)
+    rec.assign_stacked(box_texts, box_cards)
+    if output_image:
+        box_cards.save_image(image, output_image)
+    deck = rec.box_texts_to_deck(box_texts)
+    socketio.emit('scan_result', {"data": str(deck)})
 
-@celery.task()
-def scan():
-    emit("{"deck": str("dck")}
+@socketio.on('scan')
+def io_scan():
+    wait_rec()
+    scan.apply_async(("https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg",
+     azure, rec, None), serializer="pickle")
 
-
-@app.route('/', methods=['GET', 'POST'])
+@socketio.on('upload_file')
 def upload_file():
     scan.apply_async()
     return render_template("upload.html")
