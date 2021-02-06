@@ -55,34 +55,15 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
-@celery.task(bind=True, serializer="pickle")
-def scan(self, image, azure, rec, output_image=None):
-    box_texts = azure.image_to_box_texts(image)
-    box_cards = rec.box_texts_to_cards(box_texts)
-    rec.assign_stacked(box_texts, box_cards)
-    if output_image:
-        box_cards.save_image(image, output_image)
-    deck = rec.box_texts_to_deck(box_texts)
-    return {"deck": str(deck)}
+@celery.task()
+def scan():
+    emit("{"deck": str("dck")}
 
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
-    deck, filename = "", ""
-    if request.method == 'POST':
-        wait_rec()
-        image = None
-        if 'file' in request.files and request.files['file']:
-            file = request.files['file']
-            filename = secure_filename(file.filename)
-            image = app.config['UPLOAD_FOLDER'] / filename
-            file.save(image)
-        elif "url_image" in request.form and request.form["url_image"]:
-            image = request.form["url_image"]
-        if image:
-            filename = "image.png"
-            scan.apply_async((image, azure, rec, app.config['UPLOAD_FOLDER'] / filename), serializer="pickle")
-    return render_template("upload.html", deck=deck, image=filename)
+    scan.apply_async()
+    return render_template("upload.html")
 
 
 @app.route('/api/<path:url>')
