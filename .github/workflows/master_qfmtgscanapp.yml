@@ -5,8 +5,8 @@ name: Build and deploy Python app to Azure Web App - qfmtgscanapp
 
 on:
   push:
-    branches:
-      - master
+    tags:
+    - '*'
 
 jobs:
   build-and-deploy:
