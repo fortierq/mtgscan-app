@@ -8,47 +8,47 @@
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
 
     <title>MTGScan</title>
+
+    <h1 class="center-text">Convert image to decklist</h1>
+    
+    <form id="scan" method="POST" enctype="multipart/form-data" action="#">
+        <input type="file" name="file"> <br>
+        Or URL: <input id="url" type="text" name="url_image" size=30
+            value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"">
+        <input type="submit" value="Scan image">
+    </form>
+    
+    <div class="loader center" style="display:none;"></div>
+    
+    <div id="decklist"></div>
+    
+    <br>
+    
+    <!-- <div id="image"></div>
+    
+    <img src=""> -->
+    
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
-            var socket = io();
-
-            socket.on('scan_result', function (msg) {
-                $('.loader').hide();
-                $('#decklist').text('');
+            var socketio = io();
+    
+            socketio.on("scan_result", msg => {
+                $(".loader").hide();
+                $("#decklist").text("");
                 for (const card in msg.deck) {
-                    $('#decklist').append(`${msg.deck[card]} ${card} <br>`);
+                    $("#decklist").append(`${msg.deck[card]} ${card} <br>`);
                 }
+                $("#image").attr("src", "msg.image");
             });
-
+    
             // Handlers for the different forms in the page.
             // These accept data from the user and send it to the server in a
             // variety of ways
-            $('form#scan').submit(function (event) {
-                $('.loader').show();
-                socket.emit('scan', { "image": $('#url').val() });
+            $("form#scan").submit(event => {
+                $(".loader").show();
+                socketio.emit("scan", { "image": $("#url").val() });
                 return false;
             });
         });
     </script>
-</head>
-
-
-
-<h1 class="center-text">Convert image to decklist</h1>
-
-<form id="scan" method="POST" enctype=multipart/form-data action='#'>
-    <input type=file name=file> <br>
-    Or URL: <input id="url" type="text" name="url_image" size=30
-        value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"">
-    <input type=submit value=" Scan image" onclick="">
-</form>
-
-<div class="loader center" style="display:none;"></div>
-
-<div id="decklist"></div>
-
-<br>
-
-<!-- {% if image %}
-<img src="{{ url_for('uploaded_file', filename=image) }}">
-{% endif %} -->
+    
