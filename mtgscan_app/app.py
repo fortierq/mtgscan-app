@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 import os
 import threading
 import time
@@ -24,8 +27,8 @@ app.config['MAX_CONTENT_LENGTH'] = 100_000_000
 app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-socketio = SocketIO(app)
 
+socketio = SocketIO(app, message_queue='redis://localhost:6379/0')
 
 # Initialize Celery
 celery = Celery(app.name)
@@ -45,14 +48,15 @@ def load_cards():
 
 @app.before_first_request
 def init():
-    thread = threading.Thread(target=load_cards)
-    thread.start()
+    # thread = threading.Thread(target=load_cards)
+    # thread.start()
+    pass
 
 
 @app.route('/')
 def index():
     return render_template("upload.html")
-    
+
 
 def wait_rec():  # wait until rec files are loaded
     while not rec:
@@ -63,21 +67,30 @@ def wait_rec():  # wait until rec files are loaded
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-@celery.task(serializer="pickle")
-def scan(image, azure, rec, output_image=None):
+@socketio.on('scan')
+def start_scan(msg):
+    scan.apply_async((msg["image"],))
+
+
+@socketio.on('scan_result')
+def f(msg):
+    print("hey!")
+
+@celery.task
+def scan(image):
+    rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
+                           file_keywords=(DIR_ROOT / "Keywords.json"),
+                           max_ratio_diff=0.2)
     box_texts = azure.image_to_box_texts(image)
     box_cards = rec.box_texts_to_cards(box_texts)
     rec.assign_stacked(box_texts, box_cards)
-    if output_image:
-        box_cards.save_image(image, output_image)
+    # if output_image:
+    #     box_cards.save_image(msg.image, output_image)
     deck = rec.box_texts_to_deck(box_texts)
-    socketio.emit('scan_result', {"data": str(deck)})
 
-@socketio.on('scan')
-def io_scan():
-    wait_rec()
-    scan.apply_async(("https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg",
-     azure, rec, None), serializer="pickle")
+    sio = SocketIO(message_queue='redis://localhost:6379/0')
+    sio.emit('scan_result', {"deck": deck.maindeck.cards})
+
 
 @socketio.on('upload_file')
 def upload_file():
@@ -89,3 +102,7 @@ def upload_file():
 def api_scan(url):
     deck = scan(url, azure, rec, None)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
+
+
+if __name__ == '__main__':
+    socketio.run(app)
