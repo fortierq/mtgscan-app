@@ -22,59 +22,28 @@ UPLOAD_FOLDER.mkdir(parents=True, exist_ok=True)
 
 # Initialize Flask
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 100_000_000
-app.secret_key = os.environ.get('SECRET_KEY')
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["MAX_CONTENT_LENGTH"] = 100_000_000
+app.secret_key = os.environ.get("SECRET_KEY")
+app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 
-
-socketio = SocketIO(app, message_queue='redis://localhost:6379/0')
+socketio = SocketIO(app, message_queue="redis://localhost:6379/0")
 
 # Initialize Celery
 celery = Celery(app.name)
-celery.conf.update(CELERY_BROKER_URL='redis://localhost:6379/0',
-                   CELERY_RESULT_BACKEND='redis://localhost:6379/0',
+celery.conf.update(CELERY_BROKER_URL="redis://localhost:6379/0",
+                   CELERY_RESULT_BACKEND="redis://localhost:6379/0",
                    CELERY_TASK_SERIALIZER="pickle",
-                   CELERY_ACCEPT_CONTENT=['pickle', 'json'])
+                   CELERY_ACCEPT_CONTENT=["pickle", "json"])
 
-
-def load_cards():
-    global rec
-    if rec is None:
-        rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
-                               file_keywords=(DIR_ROOT / "Keywords.json"),
-                               max_ratio_diff=0.2)
-
-
-@app.before_first_request
-def init():
-    # thread = threading.Thread(target=load_cards)
-    # thread.start()
-    pass
-
-
-@app.route('/')
+@app.route("/")
 def index():
     return render_template("upload.html")
 
-
-def wait_rec():  # wait until rec files are loaded
-    while not rec:
-        time.sleep(5)
-
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-@socketio.on('scan')
+@socketio.on("scan")
 def start_scan(msg):
+    print("bla")
     scan.apply_async((msg["image"],))
-
-
-@socketio.on('scan_result')
-def f(msg):
-    print("hey!")
 
 @celery.task
 def scan(image):
@@ -84,25 +53,18 @@ def scan(image):
     box_texts = azure.image_to_box_texts(image)
     box_cards = rec.box_texts_to_cards(box_texts)
     rec.assign_stacked(box_texts, box_cards)
-    # if output_image:
-    #     box_cards.save_image(msg.image, output_image)
+    box_cards.save_image(image, "image.png")
     deck = rec.box_texts_to_deck(box_texts)
 
-    sio = SocketIO(message_queue='redis://localhost:6379/0')
-    sio.emit('scan_result', {"deck": deck.maindeck.cards})
+    sio = SocketIO(message_queue="redis://localhost:6379/0")
+    sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": "image.png"})
 
 
-@socketio.on('upload_file')
-def upload_file():
-    scan.apply_async()
-    return render_template("upload.html")
-
-
-@app.route('/api/<path:url>')
+@app.route("/api/<path:url>")
 def api_scan(url):
     deck = scan(url, azure, rec, None)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
 
 
-if __name__ == '__main__':
-    socketio.run(app)
+if __name__ == "__main__":
+    socketio.run(app, debug=True)
