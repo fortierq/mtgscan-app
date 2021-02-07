@@ -1,0 +1,8 @@
+*.pyc
+*.pdf
+*.code-workspace
+prod.env
+*.png
+*.jpeg
+*.json
+dump.rdb
