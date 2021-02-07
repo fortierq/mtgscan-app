@@ -24,9 +24,7 @@
     
     <br>
     
-    <!-- <div id="image"></div>
-    
-    <img src=""> -->
+    <img id="image"></img>
     
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
@@ -38,12 +36,9 @@
                 for (const card in msg.deck) {
                     $("#decklist").append(`${msg.deck[card]} ${card} <br>`);
                 }
-                $("#image").attr("src", "msg.image");
+                $("#image").attr("src", msg.image);
             });
-    
-            // Handlers for the different forms in the page.
-            // These accept data from the user and send it to the server in a
-            // variety of ways
+
             $("form#scan").submit(event => {
                 $(".loader").show();
                 socketio.emit("scan", { "image": $("#url").val() });
