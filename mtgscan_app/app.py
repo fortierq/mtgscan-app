@@ -59,12 +59,10 @@ def scan(image):
     sio = SocketIO(message_queue="redis://localhost:6379/0")
     sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": "image.png"})
 
-
 @app.route("/api/<path:url>")
 def api_scan(url):
     deck = scan(url, azure, rec, None)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
-
 
 if __name__ == "__main__":
     socketio.run(app, debug=True)
