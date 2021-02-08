@@ -1,8 +1,11 @@
+trap "kill 0" EXIT # to kill all subprocesses when done
 
-export FLASK_ENV=development
-export FLASK_APP=mtgscan_app/app.py
-export SECRET_KEY=secret
 set -a
-source prod.env
+source prod.env # set environment variables
 set +a
-poetry run flask run
+
+$REDIS & # run Redis as message broker
+
+# celery -A mtgscan_app.app.celery worker --loglevel=DEBUG & # run Celery task queue
+
+poetry run flask run # run Flask
