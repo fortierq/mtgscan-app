@@ -19,26 +19,14 @@ app.secret_key = os.environ.get("SECRET_KEY")
 
 socketio = SocketIO(app, message_queue=REDIS_URL)
 
-celery = Celery(app.name)
-celery.conf.update(CELERY_BROKER_URL=REDIS_URL, CELERY_RESULT_BACKEND=REDIS_URL)
+celery = Celery(app.name, broker=REDIS_URL, backend=REDIS_URL)
 
 
 class ScanTask(Task):
-    _rec = None
-
     def __init__(self):
         self._rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
                                      file_keywords=(DIR_ROOT / "Keywords.json"),
                                      max_ratio_diff=0.2)
-
-    def scan(self, image):
-        azure = Azure()
-        box_texts = azure.image_to_box_texts(image)
-        box_cards = self._rec.box_texts_to_cards(box_texts)
-        self._rec.assign_stacked(box_texts, box_cards)
-        box_cards.save_image(image, "image.png")
-        deck = self._rec.box_texts_to_deck(box_texts)
-        return deck
 
 
 @app.route("/")
@@ -53,7 +41,7 @@ def scan_io(msg):
 
 @celery.task(base=ScanTask)
 def scan_celery(image):
-    deck = scan_celery.scan(image)
+    deck = scan(scan_celery._rec, image)
     sio = SocketIO(message_queue=REDIS_URL)
     sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": ""})
 
@@ -70,7 +58,10 @@ def scan(rec, image):
 
 @app.route("/api/<path:url>")
 def api_scan(url):
-    deck = scan(url)
+    rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
+                           file_keywords=(DIR_ROOT / "Keywords.json"),
+                           max_ratio_diff=0.2)
+    deck = scan(rec, url)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
 
 
