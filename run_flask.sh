@@ -6,6 +6,4 @@ set +a
 
 $REDIS & # run Redis as message broker
 
-# celery -A mtgscan_app.app.celery worker --loglevel=DEBUG & # run Celery task queue
-
-poetry run flask run # run Flask
+poetry run python mtgscan_app/app.py # run Flask
