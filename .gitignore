@@ -1,7 +1,8 @@
 *.pyc
 *.pdf
 *.code-workspace
-prod.env
+.*
+!.gitignore
 *.png
 *.jpeg
 *.json
