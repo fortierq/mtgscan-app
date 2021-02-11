@@ -4,6 +4,6 @@ set +a
 
 redis-server # run Redis as message broker
 
-poetry run python mtgscan_app/app.py # run Flask
+python src/app.py # run Flask
 
 redis-cli shutdown
