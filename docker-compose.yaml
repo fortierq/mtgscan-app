@@ -1,19 +1,23 @@
-redis:
-    image: redis
-    ports:
-        - '6379:6379'
+services:
+    redis:
+        image: redis
+        ports:
+            - '6379:6379'
 
-        
-flask:
-    build: server
-    ports:
-        - '5000:5000'
-    links:
-      - redis
+            
+    flask:
+        build: server
+        ports:
+            - '5000:5000'
+        links:
+            - redis
 
 
-celery:
-    build: server
-    command: "celery -A app.celery worker --loglevel=info"
-    links:
-      - redis
+    celery:
+        build: server
+        command: "celery -A app.celery worker --loglevel=info"
+        links:
+            - redis
+        environment:
+            - AZURE_VISION_KEY
+            - AZURE_VISION_ENDPOINT
