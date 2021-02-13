@@ -7,6 +7,7 @@ services:
             
     flask:
         build: server
+        image: regmtgscan.azurecr.io/server
         ports:
             - '5000:5000'
         links:
@@ -15,6 +16,7 @@ services:
 
     celery:
         build: server
+        image: regmtgscan.azurecr.io/server
         command: "celery -A app.celery worker --loglevel=info"
         links:
             - redis
