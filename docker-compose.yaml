@@ -14,6 +14,6 @@ flask:
 
 celery:
     build: server
-    command: "celery -A server.celery worker --loglevel=info"
+    command: "celery -A app.celery worker --loglevel=info"
     links:
       - redis
