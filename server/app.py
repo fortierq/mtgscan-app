@@ -10,7 +10,8 @@ from mtgscan.ocr import Azure
 from mtgscan.text import MagicRecognition
 from flask_socketio import SocketIO
 
-DIR_ROOT = Path(__file__).parents[1]
+DIR_DATA = Path(__file__).parent / "data"
+# REDIS_URL = "redis://redis:6379/0"
 REDIS_URL = "redis://localhost:6379/0"
 
 # Initialize Flask, SocketIO, Celery
@@ -24,8 +25,8 @@ celery = Celery(app.name, broker=REDIS_URL, backend=REDIS_URL)
 
 class ScanTask(Task):
     def __init__(self):
-        self._rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
-                                     file_keywords=(DIR_ROOT / "Keywords.json"),
+        self._rec = MagicRecognition(file_all_cards=str(DIR_DATA / "all_cards.txt"),
+                                     file_keywords=(DIR_DATA / "Keywords.json"),
                                      max_ratio_diff=0.2)
 
 
@@ -58,12 +59,13 @@ def scan(rec, image):
 
 @app.route("/api/<path:url>")
 def api_scan(url):
-    rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
-                           file_keywords=(DIR_ROOT / "Keywords.json"),
+    rec = MagicRecognition(file_all_cards=str(DIR_DATA / "all_cards.txt"),
+                           file_keywords=(DIR_DATA / "Keywords.json"),
                            max_ratio_diff=0.2)
     deck = scan(rec, url)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
 
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0')
+    # socketio.run(app, debug=True, host='0.0.0.0')
+    socketio.run(app, debug=True)

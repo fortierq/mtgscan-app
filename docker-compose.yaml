@@ -1,0 +1,19 @@
+redis:
+    image: redis
+    ports:
+        - '6379:6379'
+
+        
+flask:
+    build: server
+    ports:
+        - '5000:5000'
+    links:
+      - redis
+
+
+celery:
+    build: server
+    command: "celery -A server.celery worker --loglevel=info"
+    links:
+      - redis

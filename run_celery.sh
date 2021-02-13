@@ -2,5 +2,5 @@ set -a
 source .env # set environment variables
 set +a
 
-cd src
+cd server
 celery -A app.celery worker --loglevel=DEBUG
