@@ -17,7 +17,7 @@ services:
     celery:
         build: server
         image: regmtgscan.azurecr.io/server
-        command: "celery -A app.celery worker --loglevel=info"
+        command: "celery -A app.celery worker --loglevel=info --uid=nobody"
         links:
             - redis
         environment:
