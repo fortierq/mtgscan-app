@@ -4,9 +4,9 @@
 name: Build and deploy Python app to Azure Web App - qfmtgscanapp
 
 on:
-  push:
-    tags:
-    - '*'
+  push
+#     tags:
+#     - '*'
 
 jobs:
   build-and-deploy:
@@ -29,6 +29,6 @@ jobs:
     - name: 'Deploy to Azure Web App'
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'qfmtgscanapp'
+        app-name: 'mtgscanner'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_7dfad461cb2642a993c7f95b25e5ee6c }}
