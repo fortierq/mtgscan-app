@@ -28,7 +28,7 @@
     
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
-            var socketio = io();
+            var socketio = io.connect('http://' + document.domain + ':' + location.port);
     
             socketio.on("scan_result", msg => {
                 $(".loader").hide();

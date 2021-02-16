@@ -18,7 +18,7 @@ REDIS_URL = "redis://redis:6379/0"
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
 
-socketio = SocketIO(app, message_queue=REDIS_URL)
+socketio = SocketIO(app, message_queue=REDIS_URL, cors_allowed_origins="*")
 
 celery = Celery(app.name, broker=REDIS_URL, backend=REDIS_URL)
 
@@ -52,7 +52,7 @@ def scan(rec, image):
     box_texts = azure.image_to_box_texts(image)
     box_cards = rec.box_texts_to_cards(box_texts)
     rec.assign_stacked(box_texts, box_cards)
-    box_cards.save_image(image, "image.png")
+    # box_cards.save_image(image, "image.png")
     deck = rec.box_texts_to_deck(box_texts)
     return deck
 
@@ -67,5 +67,5 @@ def api_scan(url):
 
 
 if __name__ == "__main__":
-    socketio.run(app, debug=True, host='0.0.0.0')
+    socketio.run(app, host='0.0.0.0')
     # socketio.run(app, debug=True)

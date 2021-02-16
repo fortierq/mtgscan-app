@@ -1,18 +1,11 @@
 services:
-    redis:
-        image: redis
-        ports:
-            - '6379:6379'
-
-            
     flask:
         build: server
         image: regmtgscan.azurecr.io/server
         ports:
-            - '5000:5000'
+            - '80:5000'
         links:
             - redis
-
 
     celery:
         build: server
@@ -23,3 +16,8 @@ services:
         environment:
             - AZURE_VISION_KEY
             - AZURE_VISION_ENDPOINT
+
+    redis:
+        image: redis
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
