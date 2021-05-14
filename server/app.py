@@ -12,7 +12,6 @@ from flask_socketio import SocketIO
 
 DIR_DATA = Path(__file__).parent / "data"
 REDIS_URL = "redis://redis:6379/0"
-# REDIS_URL = "redis://localhost:6379/0"
 
 # Initialize Flask, SocketIO, Celery
 app = Flask(__name__)
@@ -68,4 +67,3 @@ def api_scan(url):
 
 if __name__ == "__main__":
     socketio.run(app, host='0.0.0.0')
-    # socketio.run(app, debug=True)
