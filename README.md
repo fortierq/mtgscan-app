@@ -1,5 +1,5 @@
 # MTGScan app
-![](https://user-images.githubusercontent.com/49362475/105637347-6098b980-5e6d-11eb-8f19-2e0926b11bb4.png)
+![mtgscan-app](https://user-images.githubusercontent.com/49362475/122680781-46cb8a80-d1f1-11eb-9e6c-9cef075da3f5.png)
 
 ---
 
