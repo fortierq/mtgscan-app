@@ -1,6 +1,5 @@
 import os
 import threading
-import time
 from pathlib import Path
 
 from flask import Flask, render_template, request, send_from_directory, jsonify
@@ -26,9 +25,6 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 def load():
-    """
-    This function cleans up old tasks from our in-memory data structure.
-    """
     global rec
 
     rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
@@ -40,11 +36,6 @@ thread = threading.Thread(target=load)
 thread.start()
 
 
-def wait_rec():  # wait until rec files are loaded
-    while not rec:
-        time.sleep(5)
-
-
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
@@ -54,7 +45,7 @@ def uploaded_file(filename):
 def upload_file():
     deck, filename = "", ""
     if request.method == 'POST':
-        wait_rec()
+        thread.join()
         image = None
         if 'file' in request.files and request.files['file']:
             file = request.files['file']
@@ -71,6 +62,6 @@ def upload_file():
 
 @app.route('/api/<path:url>')
 def api_scan(url):
-    wait_rec()
+    thread.join()
     deck = scan(url, azure, rec, None)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
