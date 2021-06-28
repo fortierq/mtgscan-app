@@ -7,3 +7,4 @@
 *.jpeg
 *.json
 dump.rdb
+*.env 
