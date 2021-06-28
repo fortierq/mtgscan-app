@@ -23,26 +23,21 @@ app.config['MAX_CONTENT_LENGTH'] = 100_000_000
 app.secret_key = os.environ.get('SECRET_KEY')
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-
 def load():
     global rec
-
     rec = MagicRecognition(file_all_cards=str(DIR_ROOT / "all_cards.txt"),
                            file_keywords=(DIR_ROOT / "Keywords.json"),
                            max_ratio_diff=0.2)
 
-
 thread = threading.Thread(target=load)
 thread.start()
-
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-
 @app.route('/', methods=['GET', 'POST'])
-def upload_file():
+async def upload_file():
     deck, filename = "", ""
     if request.method == 'POST':
         thread.join()
@@ -56,12 +51,11 @@ def upload_file():
             image = request.form["url_image"]
         if image:
             filename = "image.png"
-            deck = scan(image, azure, rec, app.config['UPLOAD_FOLDER'] / filename)
+            deck = await scan(image, azure, rec, app.config['UPLOAD_FOLDER'] / filename)
     return render_template("upload.html", deck=deck, image=filename)
 
-
 @app.route('/api/<path:url>')
-def api_scan(url):
+async def api_scan(url):
     thread.join()
-    deck = scan(url, azure, rec, None)
+    deck = await scan(url, azure, rec, None)
     return jsonify({"maindeck": deck.maindeck.cards, "sideboard": deck.sideboard.cards})
