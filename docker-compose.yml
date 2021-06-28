@@ -1,16 +1,16 @@
 services:
     flask:
         build: server
-        image: regmtgscan.azurecr.io/server
+        image: qfortier/mtgscan-app
         ports:
-            - '80:5000'
+            - '5000:5000'
         links:
             - redis
 
     celery:
         build: server
-        image: regmtgscan.azurecr.io/server
-        command: "celery -A app.celery worker --loglevel=info --uid=nobody"
+        image: qfortier/mtgscan-app
+        command: "celery -A worker.celery worker --loglevel=info --uid=nobody"
         links:
             - redis
         environment:
