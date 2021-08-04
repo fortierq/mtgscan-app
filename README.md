@@ -1,6 +1,6 @@
 # MTGScan app
 ![](https://user-images.githubusercontent.com/49362475/105637347-6098b980-5e6d-11eb-8f19-2e0926b11bb4.png)
-
+test
 ---
 
 This is a web application for [mtgscan](https://github.com/fortierq/mtgscan).
