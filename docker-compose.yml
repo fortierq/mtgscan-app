@@ -1,7 +1,7 @@
 services:
     flask:
-        build: server
-        image: qfortier/mtgscan-server # hosted on dockerhub
+        # build: server
+        image: qfortier/mtgscan-server:1.0 # hosted on dockerhub
         ports:
             - '5000:5000'
         links:
@@ -9,12 +9,12 @@ services:
         volumes:
             - ./server:/app # to avoid restarting
         environment:
-            FLASK_ENV=development # to avoid restarting
+            - FLASK_ENV=development # to avoid restarting
 
 
     celery:
-        build: server
-        image: qfortier/mtgscan-server
+        # build: server
+        image: qfortier/mtgscan-server:1.0
         command: "celery -A app.celery worker --loglevel=info --uid=nobody"
         links:
             - redis
