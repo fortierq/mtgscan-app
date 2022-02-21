@@ -1,9 +1,35 @@
 # MTGScan app
-![mtgscan-app](https://user-images.githubusercontent.com/49362475/122680781-46cb8a80-d1f1-11eb-9e6c-9cef075da3f5.png)
+
+```mermaid
+  flowchart LR;
+  subgraph "Browser"
+    C1[Client];
+    C2[Client];
+    C3[Client];
+  end
+  subgraph "Frontend"
+    F((Flask Server));
+  end
+  subgraph "Backend"
+    W1[Celery Worker<br>using mtgscan];
+    W2[Celery Worker<br>using mtgscan];
+  end
+  subgraph "Cloud"
+    A[Azure Read OCR];
+  end
+  C1 <-->|Socket.IO| F;
+  C2 <-->|Socket.IO| F;
+  C3 <-->|Socket.IO| F;
+  F <-->|RedisMQ| W1;
+  F <-->|RedisMQ| W2;
+  W1 <-->|API| A;
+  W2 <-->|API| A;
+```
 
 ---
 
-This is a web application for [mtgscan](https://github.com/fortierq/mtgscan).
+This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image.
+
 # Installation
 
 ```
