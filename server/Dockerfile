@@ -1,16 +1,6 @@
-FROM python:3.9
-
-RUN python3 -m pip install --upgrade pip &&\   
-    curl -sSL https://install.python-poetry.org | python3 -
-    
+FROM python:3.8
 WORKDIR /app
-
-COPY pyproject.toml ./
-
-ENV PATH="/root/.local/bin:${PATH}"
-
-RUN poetry install
-
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 EXPOSE 5000
-
-CMD ["poetry", "run", "python", "/app/app.py"]
+CMD ["python3", "app.py"]
