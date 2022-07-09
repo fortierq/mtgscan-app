@@ -28,18 +28,21 @@
 
 This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image. Try it: https://qfmtgscanapp.azurewebsites.net (I use Azure free tier - it may takes few seconds to start).
 
-# Installation
+# Requirements
 
-```
-pip install -r requirements.txt  
-source launch.sh
-```
+- docker-compose
+- Azure Computer Vision credentials
 
 # Usage
 
-Load an image or select an URL to get the decklist and an image displaying recognized cards.
+- Create a .env file with your AZURE_VISION_KEY and AZURE_VISION_ENDPOINT [Azure Computer Vision](https://azure.microsoft.com/fr-fr/services/cognitive-services/computer-vision) credentials
+- `make up`
+- Go to http://localhost:5000
+- Load an image or an URL containing magic cards to get the decklist
 
 # RESTful API
+
+This application also defines a RESTful API.
 
 ## Request
 
