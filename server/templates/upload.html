@@ -12,7 +12,7 @@
 
     <h1 class="center-text">Convert an image to mtg decklist</h1>
     
-    <form id="scan" align="center" method="POST" enctype="multipart/form-data" action="#">
+    <form id="scan" class="center center-text" method="POST" enctype="multipart/form-data" action="#">
         <input type="file" name="file"> <br>
         Or URL: <input id="url" type="text" name="url_image" size=30
             value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"">
@@ -20,7 +20,7 @@
     </form>
     
     <br>
-    <textarea class="center" id="decklist" style="display:none;height:400px" readonly></textarea>
+    <textarea class="center" id="decklist" style="display:none;height:400px;" readonly></textarea>
 
     <div class="loader center" style="display:none"></div>
     
@@ -34,9 +34,7 @@
                 $(".loader").hide();
                 // $("#decklist").text(msg.decklist);
                 let deck = "";
-                let n = 0;
                 for (const card in msg.deck) {
-                    n += 1;
                     deck += `${msg.deck[card]} ${card}\n`;
                 }
                 deck = deck.slice(0, -1);
