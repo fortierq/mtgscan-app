@@ -6,23 +6,23 @@
         integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
         crossorigin="anonymous"></script>
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 
-    <title>MTGScan</title>
+    <title>mtgscan</title>
 
-    <h1 class="center-text">Convert image to decklist</h1>
+    <h1 class="center-text">Convert an image to mtg decklist</h1>
     
-    <form id="scan" method="POST" enctype="multipart/form-data" action="#">
+    <form id="scan" align="center" method="POST" enctype="multipart/form-data" action="#">
         <input type="file" name="file"> <br>
         Or URL: <input id="url" type="text" name="url_image" size=30
             value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"">
         <input type="submit" value="Scan image">
     </form>
     
-    <div class="loader center" style="display:none;"></div>
-    
-    <div id="decklist"></div>
-    
     <br>
+    <textarea class="center" id="decklist" style="display:none;height:400px" readonly></textarea>
+
+    <div class="loader center" style="display:none"></div>
     
     <img id="image"></img>
     
@@ -32,10 +32,17 @@
     
             socketio.on("scan_result", msg => {
                 $(".loader").hide();
-                $("#decklist").text("");
+                // $("#decklist").text(msg.decklist);
+                let deck = "";
+                let n = 0;
                 for (const card in msg.deck) {
-                    $("#decklist").append(`${msg.deck[card]} ${card} <br>`);
+                    n += 1;
+                    deck += `${msg.deck[card]} ${card}\n`;
                 }
+                deck = deck.slice(0, -1);
+                console.log("deck" + deck);
+                $("#decklist").text(deck);
+                $("#decklist").show();
                 $("#image").attr("server", msg.image);
             });
 
