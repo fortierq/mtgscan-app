@@ -1,29 +1,20 @@
 services:
     flask:
         # build: server
-        image: qfortier/mtgscan-server:1.0 # hosted on dockerhub
+        image: qfortier/mtgscan-server:2.0 # hosted on dockerhub
         ports:
             - '5000:5000'
         links:
             - redis
-        volumes:
-            - ./server:/app # to avoid restarting
-        environment:
-            - FLASK_ENV=development # to avoid restarting
-
 
     celery:
         # build: server
-        image: qfortier/mtgscan-server:1.0
+        image: qfortier/mtgscan-server:2.0
         command: "celery -A app.celery worker --loglevel=info --uid=nobody"
         links:
             - redis
-        environment:
-            - AZURE_VISION_KEY # env var must be set by user
-            - AZURE_VISION_ENDPOINT
-            - FLASK_ENV=development
-        volumes:
-            - ./server:/app
+        env_file:
+            - .env
 
     redis:
         image: redis
