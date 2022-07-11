@@ -36,14 +36,15 @@ def index():
 
 @socketio.on("scan")
 def scan_io(msg):
-    scan_celery.apply_async((msg["image"], ))
+    scan_celery.apply_async((msg, ))
 
 
 @celery.task(base=ScanTask)
-def scan_celery(image):
-    deck = scan(scan_celery._rec, image)
+def scan_celery(msg):
+    print(f"message: {msg}")
+    deck = scan(scan_celery._rec, msg["image"])
     sio = SocketIO(message_queue=REDIS_URL)
-    sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": ""})
+    sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": ""}, room=msg["id"])
 
 
 def scan(rec, image):
