@@ -35,9 +35,9 @@ This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to
 
 # Usage
 
-- Create a .env file with your AZURE_VISION_KEY and AZURE_VISION_ENDPOINT [Azure Computer Vision](https://azure.microsoft.com/fr-fr/services/cognitive-services/computer-vision) credentials
-- `make up`
-- Go to http://localhost:5000
+- Create a .env file with your AZURE_VISION_KEY and AZURE_VISION_ENDPOINT [Azure Computer Vision](https://azure.microsoft.com/fr-fr/services/cognitive-services/computer-vision) credentials  
+- `make up`  
+- Go to http://localhost:5000  
 - Load an image or an URL containing magic cards to get the decklist
 
 # RESTful API
