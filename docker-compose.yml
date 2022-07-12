@@ -1,16 +1,18 @@
 services:
     flask:
         # build: server
-        image: qfortier/mtgscan-server:2.0 # hosted on dockerhub
+        image: qfortier/mtgscan-server:2.0
         ports:
             - '5000:5000'
         links:
             - redis
+        env_file:
+            - .env
 
     celery:
         # build: server
         image: qfortier/mtgscan-server:2.0
-        command: "celery -A app.celery worker --loglevel=info --uid=nobody"
+        command: "celery -A app.celery worker -P eventlet --loglevel=info --uid=nobody"
         links:
             - redis
         env_file:

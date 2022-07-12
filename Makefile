@@ -2,6 +2,7 @@ SHELL:=/bin/bash
 VERSION=2.0
 
 up: 
+	firefox localhost:5000 &
 	source .env && \
 	docker-compose up --build
 

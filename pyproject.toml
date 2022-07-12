@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "mtgscan-app"
+version = "0.1.0"
+description = ""
+authors = ["Quentin Fortier <qpfortier@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+mtgscan = {git = "https://github.com/fortierq/mtgscan"}
+eventlet = "^0.33.1"
+celery = "^5.2.0"
+Flask = "^2.1.0"
+Flask-SocketIO = "^5.2.0"
+redis = "^4.3.4"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

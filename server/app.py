@@ -6,7 +6,7 @@ from pathlib import Path
 
 from celery import Celery, Task
 from flask import Flask, jsonify, render_template
-from mtgscan.ocr import Azure
+from mtgscan.ocr.azure import Azure
 from mtgscan.text import MagicRecognition
 from flask_socketio import SocketIO
 
@@ -16,6 +16,7 @@ REDIS_URL = "redis://redis:6379/0"
 # Initialize Flask, SocketIO, Celery
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY")
+app.logger.info(f"Started {app.name}")
 
 socketio = SocketIO(app, message_queue=REDIS_URL, cors_allowed_origins="*")
 
@@ -34,11 +35,6 @@ def index():
     return render_template("upload.html")
 
 
-@socketio.on("scan")
-def scan_io(msg):
-    scan_celery.apply_async((msg, ))
-
-
 @celery.task(base=ScanTask)
 def scan_celery(msg):
     print(f"message: {msg}")
@@ -47,11 +43,19 @@ def scan_celery(msg):
     sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": ""}, room=msg["id"])
 
 
+@socketio.on("scan")
+def scan_io(msg):
+    app.logger.info(f"Received scan message: {msg}")
+    result = scan_celery.delay(msg)
+    app.logger.info(f"Result: {result.get()}")
+
+
+
 def scan(rec, image):
     azure = Azure()
     box_texts = azure.image_to_box_texts(image)
     box_cards = rec.box_texts_to_cards(box_texts)
-    rec.assign_stacked(box_texts, box_cards)
+    rec._assign_stacked(box_texts, box_cards)
     # box_cards.save_image(image, "image.png")
     deck = rec.box_texts_to_deck(box_texts)
     return deck
@@ -67,4 +71,4 @@ def api_scan(url):
 
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0')
+    socketio.run(app, host='0.0.0.0', debug=True)
