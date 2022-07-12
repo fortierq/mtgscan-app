@@ -12,7 +12,7 @@ services:
     celery:
         # build: server
         image: qfortier/mtgscan-server:2.0
-        command: "celery -A app.celery worker -P eventlet --loglevel=info --uid=nobody"
+        command: "poetry run celery -A app.celery worker -P eventlet --loglevel=info"
         links:
             - redis
         env_file:
