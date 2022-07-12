@@ -7,7 +7,7 @@ services:
     links:
       - redis
     env_file:
-      - .env
+      - redis/redis.env
 
   celery:
     # build: server
@@ -16,7 +16,8 @@ services:
     links:
       - redis
     env_file:
-      - .env
+      - azure.env
+      - redis/redis.env
 
   redis:
     image: redis
