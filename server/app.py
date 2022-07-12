@@ -11,7 +11,7 @@ from mtgscan.text import MagicRecognition
 from flask_socketio import SocketIO
 
 DIR_DATA = Path(__file__).parent / "data"
-REDIS_URL = "redis://redis:6379/0"
+REDIS_URL = f"redis://:{os.environ.get('REDIS_PASSWORD')}@redis:6379/0"
 
 # Initialize Flask, SocketIO, Celery
 app = Flask(__name__)
