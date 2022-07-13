@@ -8,7 +8,7 @@
 
     <title>Mtgscan</title>
 
-    <h1 class="center-text">Convert an image to mtg decklist</h1>
+    <h2 class="center-text">Convert an image to mtg decklist</h1>
 
     <form id="scan" class="center center-text" method="POST" enctype="multipart/form-data" action="#">
         <input id="file" type="file" name="file"> <br>
@@ -16,19 +16,21 @@
         <input id="url" type="text" name="url_image" size=30
             value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"">
         <input type="submit" value="Scan image">
-    </form>
+    </form><br>
+    
+    <img id="image" /><br>
 
-    <br>
-    <textarea class="center" id="decklist" style="display:none;height:400px;" readonly></textarea>
+    <textarea class="center" id="decklist" style="display:none;height:300px;width:100%" readonly></textarea>
 
     <div class="loader center" style="display:none"></div>
 
-    <img id="image"/>
 
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
             const socketio = io.connect('http://' + document.domain + ':' + location.port);
             $("form#scan").submit(event => {
+                $("#image").attr("src", "");
+                $("#decklist").hide();
                 $(".loader").show();
                 const file = $("#file")[0].files[0];
                 if (file) {
@@ -37,16 +39,17 @@
                     fr.addEventListener("load", function () {
                         socketio.emit("scan", { "image": fr.result, "id": socketio.id, "image_64": btoa(fr.result) });
                     }, false);
+                    $("#file")[0].value = "";
                 }
                 else {
                     socketio.emit("scan", { "image": $("#url").val(), "id": socketio.id });
+                    $("#url")[0].value = "";
                 }
                 return false;
             });
 
             socketio.on("scan_result", msg => {
                 $(".loader").hide();
-                // $("#decklist").text(msg.decklist);
                 let deck = "";
                 for (const card in msg.deck) {
                     deck += `${msg.deck[card]} ${card}\n`;
