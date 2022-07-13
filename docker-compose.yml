@@ -1,6 +1,5 @@
 services:
   flask:
-    # build: server
     image: qfortier/mtgscan-server:3.0
     ports:
       - '5000:5000'
@@ -10,7 +9,6 @@ services:
       - redis/redis.env
 
   celery:
-    # build: server
     image: qfortier/mtgscan-server:3.0
     command: "poetry run celery -A app.celery worker -P eventlet --loglevel=info"
     links:
