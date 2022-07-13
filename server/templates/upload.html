@@ -2,9 +2,7 @@
 
 <head>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
-        integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
-        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
 
@@ -13,7 +11,7 @@
     <h1 class="center-text">Convert an image to mtg decklist</h1>
 
     <form id="scan" class="center center-text" method="POST" enctype="multipart/form-data" action="#">
-        <input type="file" name="file"> <br>
+        <input id="file" type="file" name="file"> <br>
         Or URL:
         <input id="url" type="text" name="url_image" size=30
             value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"">
@@ -25,12 +23,24 @@
 
     <div class="loader center" style="display:none"></div>
 
+    <img id="image"/>
+
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
             const socketio = io.connect('http://' + document.domain + ':' + location.port);
             $("form#scan").submit(event => {
                 $(".loader").show();
-                socketio.emit("scan", { "image": $("#url").val(), "id": socketio.id });
+                const file = $("#file")[0].files[0];
+                if (file) {
+                    const fr = new FileReader();
+                    fr.readAsBinaryString(file);
+                    fr.addEventListener("load", function () {
+                        socketio.emit("scan", { "image": fr.result, "id": socketio.id, "image_64": btoa(fr.result) });
+                    }, false);
+                }
+                else {
+                    socketio.emit("scan", { "image": $("#url").val(), "id": socketio.id });
+                }
                 return false;
             });
 
@@ -43,7 +53,8 @@
                 }
                 $("#decklist").text(deck.slice(0, -1));
                 $("#decklist").show();
-                // $("#image").attr("server", msg.image);
+                $("#image").attr("src", "data:image/png;base64, " + msg.image);
+                console.log(msg);
             });
         });
     </script>

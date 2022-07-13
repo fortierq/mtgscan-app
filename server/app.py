@@ -1,6 +1,7 @@
 import eventlet
 eventlet.monkey_patch()
 
+import base64
 import os
 from pathlib import Path
 
@@ -35,30 +36,27 @@ def index():
     return render_template("upload.html")
 
 
-@celery.task(base=ScanTask)
-def scan_celery(msg):
-    print(f"message: {msg}")
-    deck = scan(scan_celery._rec, msg["image"])
-    sio = SocketIO(message_queue=REDIS_URL)
-    sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": ""}, room=msg["id"])
-
-
 @socketio.on("scan")
 def scan_io(msg):
     app.logger.info(f"Received scan message: {msg}")
-    result = scan_celery.delay(msg)
-    app.logger.info(f"Result: {result.get()}")
+    scan_celery.delay(msg)
 
 
+@celery.task(base=ScanTask)
+def scan_celery(msg):
+    deck, img = scan(scan_celery._rec, msg)
+    sio = SocketIO(message_queue=REDIS_URL)
+    sio.emit("scan_result", {"deck": deck.maindeck.cards, "image": img}, room=msg["id"])
 
-def scan(rec, image):
+
+def scan(rec, msg):
     azure = Azure()
-    box_texts = azure.image_to_box_texts(image)
+    box_texts = azure.image_to_box_texts(msg["image"], binary=True)
     box_cards = rec.box_texts_to_cards(box_texts)
     rec._assign_stacked(box_texts, box_cards)
-    # box_cards.save_image(image, "image.png")
     deck = rec.box_texts_to_deck(box_texts)
-    return deck
+    img = box_cards.get_image_base64(msg.get("image_64", msg["image"]))
+    return deck, img
 
 
 @app.route("/api/<path:url>")
