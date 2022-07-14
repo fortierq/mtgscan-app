@@ -28,12 +28,11 @@ class ScanTask(Task):
 
 @app.route("/")
 def index():
-    return render_template("upload.html")
+    return render_template("index.html")
 
 
 @socketio.on("scan")
 def scan_io(msg):
-    app.logger.info(f"Received scan message: {msg}")
     scan_celery.delay(msg)
 
 
