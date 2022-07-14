@@ -1,6 +1,6 @@
 $(document).ready(function () {
     const socketio = io.connect('http://' + document.domain + ':' + location.port);
-    $("form#scan").submit(event => {
+    $("form#scan").submit(_ => {  // send the image to the server
         $("#image").attr("src", "");
         $("#decklist").hide();
         $(".loader").show();
@@ -9,7 +9,7 @@ $(document).ready(function () {
             const fr = new FileReader();
             fr.readAsBinaryString(file);
             fr.addEventListener("load", function () {
-                socketio.emit("scan", { "image": fr.result, "id": socketio.id, "image_64": btoa(fr.result) }); // send the image to the server
+                socketio.emit("scan", { "image": fr.result, "id": socketio.id, "image_64": btoa(fr.result) });
             }, false);
             $("#file")[0].value = "";
         }
@@ -20,7 +20,7 @@ $(document).ready(function () {
         return false;
     });
 
-    socketio.on("scan_result", msg => {
+    socketio.on("scan_result", msg => { // get the decklist from the server
         $(".loader").hide();
         let deck = "";
         for (const card in msg.deck) {
