@@ -1,4 +1,4 @@
-# MTGScan app
+# Mtgscan app
 
 ```mermaid
   flowchart LR;
