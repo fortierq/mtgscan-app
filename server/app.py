@@ -14,13 +14,8 @@ from flask_socketio import SocketIO
 DIR_DATA = Path(__file__).parent / "data"
 REDIS_URL = f"redis://:{os.environ.get('REDIS_PASSWORD')}@redis:6379/0"
 
-# Initialize Flask, SocketIO, Celery
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY")
-app.logger.info(f"Started {app.name}")
-
 socketio = SocketIO(app, message_queue=REDIS_URL, cors_allowed_origins="*")
-
 celery = Celery(app.name, broker=REDIS_URL, backend=REDIS_URL)
 
 
@@ -69,4 +64,4 @@ def api_scan(url):
 
 
 if __name__ == "__main__":
-    socketio.run(app, host='0.0.0.0', debug=True)
+    socketio.run(app, host='0.0.0.0')
