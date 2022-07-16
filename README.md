@@ -1,4 +1,4 @@
-# MTGScan app
+# Mtgscan app
 
 ```mermaid
   flowchart LR;
@@ -26,7 +26,7 @@
   W2 <-->|API| A;
 ```
 
-This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image. Try it: https://mtgscan.azurewebsites.net (I use Azure free tier - it may takes few seconds to start).
+This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image. Try it: http://mtgscan.net.
 
 # Requirements
 
@@ -51,7 +51,7 @@ With your [Azure Computer Vision](https://azure.microsoft.com/fr-fr/services/cog
 
 Then:
 - `make up`  
-- Go to http://localhost:5000  
+- Go to http://localhost  
 - Load an image or an URL containing magic cards to get the decklist
 
 # RESTful API
