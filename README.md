@@ -26,16 +26,30 @@
   W2 <-->|API| A;
 ```
 
-This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image. Try it: https://qfmtgscanapp.azurewebsites.net (I use Azure free tier - it may takes few seconds to start).
+This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image. Try it: https://mtgscan.azurewebsites.net (I use Azure free tier - it may takes few seconds to start).
 
 # Requirements
 
 - docker-compose
 - Azure Computer Vision credentials
 
+I am using Azure free tier, which comes with some [limitations](https://docs.microsoft.com/en-us/azure/cognitive-services/computer-vision/overview-ocr):
+> - Supported file formats: JPEG, PNG, BMP, PDF, and TIFF
+> - The file size of images must be less than 500 MB (4 MB for the free tier) and dimensions at least 50 x 50 pixels and at most 10000 x 10000 pixels.
+
 # Usage
 
-- Create a .env file with your AZURE_VISION_KEY and AZURE_VISION_ENDPOINT [Azure Computer Vision](https://azure.microsoft.com/fr-fr/services/cognitive-services/computer-vision) credentials  
+At the root of this project:
+- Create a file redis/redis.conf containing `requirepass <password>`  
+- Create a file redis/redis.env containing: `REDIS_PASSWORD=<password>`
+- Create a file azure.env containing:
+```
+AZURE_VISION_KEY=...
+AZURE_VISION_ENDPOINT=...
+```
+With your [Azure Computer Vision](https://azure.microsoft.com/fr-fr/services/cognitive-services/computer-vision) credentials  
+
+Then:
 - `make up`  
 - Go to http://localhost:5000  
 - Load an image or an URL containing magic cards to get the decklist
