@@ -1,8 +1,7 @@
 SHELL:=/bin/bash
-VERSION=3.0
+VERSION=4.0
 
 up:
-	firefox localhost &
 	set -o allexport;\
 	source redis/redis.env;\
 	source azure.env;\

@@ -1,28 +1,38 @@
 <!doctype html>
 
+<html>
+
 <head>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
-    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <meta charset="utf-8">
+    <title>Mtgscan</title>
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+</head>
 
-    <title>Mtgscan</title>
-
+<body>
     <h2 class="center-text">Convert an image to mtg decklist</h1>
 
-    <form id="scan" class="center center-text" method="POST" enctype="multipart/form-data" action="#">
-        <input id="file" type="file" name="file"> <br>
-        Or URL:
-        <input id="url" type="text" name="url_image" size=30
-            value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"">
-        <input type="submit" value="Scan image">
-    </form><br>
-    
-    <img id="image" /><br>
+        <form id="scan" class="center center-text" method="POST" enctype="multipart/form-data" action="#">
+            <input id="file" type="file"> <br>
+            Or URL:
+            <input id="url" type="text" size=30
+                value="https://user-images.githubusercontent.com/49362475/105632710-fa07a180-5e54-11eb-91bb-c4710ef8168f.jpeg"><br>
+            <input type="submit" value="Scan image">
+        </form><br>
+        
+        <div class="loader center" style="display:none"></div>
 
-    <textarea class="center" id="decklist" style="display:none;height:300px;width:100%" readonly></textarea>
+        <img id="image"/><br>
 
-    <div class="loader center" style="display:none"></div>
+        <textarea class="center" id="decklist" style="display:none;height:300px;width:100%" readonly></textarea>
 
-    </script>
+        <footer>
+            <p> Wizards of the Coast, Magic: The Gathering, and their logos are trademarks of Wizards of the Coast LLC. © 1995-2022 Wizards. All rights reserved.</p>
+        </footer>
+
+        <script src="{{ url_for('static', filename='index.js') }}"></script>
+</body>
+
+</html>

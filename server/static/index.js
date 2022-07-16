@@ -1,4 +1,4 @@
-$(document).ready(function () {
+$(document).ready(_ => {
     const socketio = io.connect('http://' + document.domain + ':' + location.port);
     $("form#scan").submit(_ => {  // send the image to the server
         $("#image").attr("src", "");
@@ -29,6 +29,6 @@ $(document).ready(function () {
         $("#decklist").text(deck.slice(0, -1));
         $("#decklist").show();
         $("#image").attr("src", "data:image/png;base64, " + msg.image);
-        console.log(msg);
+        // console.log(msg);
     });
 });
