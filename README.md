@@ -26,8 +26,7 @@
   W2 <-->|API| A;
 ```
 
-This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image. Try it: mtgscan.net
- (I use Azure free tier - it may takes few seconds to start).
+This is a web application for [mtgscan](https://github.com/fortierq/mtgscan), to recognize Magic cards on an image. Try it: http://mtgscan.net.
 
 # Requirements
 
