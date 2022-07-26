@@ -4,8 +4,6 @@ services:
     restart: always
     ports:
       - '80:80'
-    links:
-      - redis
     env_file:
       - redis/redis.env
 
@@ -13,8 +11,6 @@ services:
     image: qfortier/mtgscan-server:4.0
     restart: always
     command: "poetry run celery -A app.celery worker -P eventlet --loglevel=info"
-    links:
-      - redis
     env_file:
       - azure.env
       - redis/redis.env
