@@ -7,11 +7,16 @@
     <title>Mtgscan</title>
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.2.3/gh-fork-ribbon.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
 </head>
 
 <body>
+    <style> .github-fork-ribbon:before { background-color: green; } </style>
+
+
+    <a class="github-fork-ribbon" href="https://github.com/fortierq/mtgscan" data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
     <h2 class="center-text">Convert an image to mtg decklist</h1>
 
         <form id="scan" class="center center-text" method="POST" enctype="multipart/form-data" action="#">
